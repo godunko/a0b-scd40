@@ -104,11 +104,13 @@ package body A0B.I2C.SCD40 is
                Self.Delay_Interval);
 
          when Write =>
-            Self.Transaction.Written_Octets := Self.Write_Buffers (1).Bytes;
+            Self.Transaction.Written_Octets :=
+              Self.Write_Buffers (1).Transferred;
             Self.Transaction.State          := Self.Write_Buffers (1).State;
 
          when Write_Read =>
-            Self.Transaction.Written_Octets := Self.Write_Buffers (1).Bytes;
+            Self.Transaction.Written_Octets :=
+              Self.Write_Buffers (1).Transferred;
             Self.Transaction.State          := Self.Write_Buffers (1).State;
             Self.State                      := Read;
 
@@ -118,7 +120,7 @@ package body A0B.I2C.SCD40 is
                Self.Delay_Interval);
 
          when Read =>
-            Self.Transaction.Read_Octets := Self.Read_Buffers (0).Bytes;
+            Self.Transaction.Read_Octets := Self.Read_Buffers (0).Transferred;
             Self.Transaction.State       := Self.Read_Buffers (0).State;
       end case;
    end On_Transfer_Completed;
@@ -181,8 +183,10 @@ package body A0B.I2C.SCD40 is
       Self.Delay_Interval := A0B.Time.Constants.Time_Span_Zero;
       A0B.Callbacks.Unset (Self.On_Completed);
       Self.Transaction    := null;
-      Self.Write_Buffers  := [others => (System.Null_Address, 0, 0, Active)];
-      Self.Read_Buffers   := [others => (System.Null_Address, 0, 0, Active)];
+      Self.Write_Buffers  :=
+        [others => (System.Null_Address, 0, 0, Active, False)];
+      Self.Read_Buffers   :=
+        [others => (System.Null_Address, 0, 0, Active, False)];
    end Reset_State;
 
    ------------------
