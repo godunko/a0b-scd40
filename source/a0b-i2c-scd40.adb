@@ -85,30 +85,93 @@ package body A0B.I2C.SCD40 is
    ---------------------------
 
    overriding procedure On_Transfer_Completed (Self : in out SCD40_Driver) is
+      use type A0B.Types.Unsigned_32;
+
+      Success : Boolean := True;
+
    begin
       case Self.State is
          when Initial =>
             raise Program_Error;
 
          when Command =>
+            if Self.Write_Buffers (0).State /= A0B.Success then
+               raise Program_Error;
+            end if;
+
+            if not Self.Write_Buffers (0).Acknowledged then
+               raise Program_Error;
+            end if;
+
             Self.Transaction.State := Self.Write_Buffers (0).State;
             --  Only command has been send, set status of the operation.
 
          when Command_Read =>
-            Self.Transaction.State := Self.Write_Buffers (0).State;
-            Self.State             := Read;
+            pragma Assert (Self.Write_Buffers (0).Size = 2);
 
-            A0B.Timer.Enqueue
-              (Self.Timeout,
-               On_Delay_Callbacks.Create_Callback (Self),
-               Self.Delay_Interval);
+            if Self.Write_Buffers (0).State = A0B.Success
+              and then Self.Write_Buffers (0).Transferred = 2
+              and then Self.Write_Buffers (0).Acknowledged
+            then
+               --  Command transmission has been completed successfully,
+               --  and has been acknowledged by the device. Delay for given
+               --  interval before start to read data from the sensor.
+
+               Self.State := Read;
+
+               A0B.Timer.Enqueue
+                 (Self.Timeout,
+                  On_Delay_Callbacks.Create_Callback (Self),
+                  Self.Delay_Interval);
+
+            else
+               --  Command transmission has been failed or device address
+               --  has not been acknowledged, set failure state and complete
+               --  transaction.
+
+               Self.Transaction.State := A0B.Failure;
+
+               Self.Controller.Stop (Self'Unchecked_Access, Success);
+
+               if not Success then
+                  raise Program_Error;
+               end if;
+            end if;
 
          when Write =>
+            if Self.Write_Buffers (0).State /= A0B.Success
+              or else Self.Write_Buffers (1).State /= A0B.Success
+            then
+               raise Program_Error;
+            end if;
+
+            if not Self.Write_Buffers (0).Acknowledged
+              or else not Self.Write_Buffers (1).Acknowledged
+            then
+               raise Program_Error;
+            end if;
+
+            --  XXX
+
             Self.Transaction.Written_Octets :=
               Self.Write_Buffers (1).Transferred;
             Self.Transaction.State          := Self.Write_Buffers (1).State;
 
          when Write_Read =>
+            if Self.Write_Buffers (0).State /= A0B.Success
+              or else Self.Write_Buffers (1).State /= A0B.Success
+            then
+               raise Program_Error;
+            end if;
+
+            if not Self.Write_Buffers (0).Acknowledged
+              or else not Self.Write_Buffers (1).Acknowledged
+            then
+               raise Program_Error;
+            end if;
+
+            --  XXX
+
             Self.Transaction.Written_Octets :=
               Self.Write_Buffers (1).Transferred;
             Self.Transaction.State          := Self.Write_Buffers (1).State;
@@ -120,8 +183,45 @@ package body A0B.I2C.SCD40 is
                Self.Delay_Interval);
 
          when Read =>
+            if Self.Read_Buffers (0).State /= A0B.Success then
+               raise Program_Error;
+            end if;
+
+            if not Self.Read_Buffers (0).Acknowledged then
+               raise Program_Error;
+            end if;
+
             Self.Transaction.Read_Octets := Self.Read_Buffers (0).Transferred;
             Self.Transaction.State       := Self.Read_Buffers (0).State;
+
+         --  when Write_Read =>
+         --     --  Write operation of the single octet of the register address.
+         --
+         --     pragma Assert (Self.Write_Buffers (0).Size = 1);
+         --
+         --     if Self.Write_Buffers (0).State = A0B.Success
+         --       and then Self.Write_Buffers (0).Transferred = 1
+         --       and then Self.Write_Buffers (0).Acknowledged
+         --     then
+         --        --  Write operation has been completed successfully, register
+         --        --  address has been acknowledged by the device.
+         --
+         --        Self.State := Read;
+         --
+         --        Self.Controller.Read
+         --          (Device  => Self'Unchecked_Access,
+         --           Buffers => Self.Read_Buffers,
+         --           Stop    => True,
+         --           Success => Success);
+         --
+         --     else
+         --        --  Write operation has been failed, set failure state and
+         --        --  complete transaction.
+         --
+         --        Self.Transaction.State := A0B.Failure;
+         --
+         --        Self.Controller.Stop (Self'Unchecked_Access, Success);
+         --     end if;
       end case;
    end On_Transfer_Completed;
 
