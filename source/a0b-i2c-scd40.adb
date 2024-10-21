@@ -232,7 +232,7 @@ package body A0B.I2C.SCD40 is
    procedure Read
      (Self           : in out SCD40_Driver'Class;
       Command        : SCD40_Command;
-      Response       : out Unsigned_8_Array;
+      Response       : out A0B.Types.Arrays.Unsigned_8_Array;
       Delay_Interval : A0B.Time.Time_Span;
       Status         : aliased out Transaction_Status;
       On_Completed   : A0B.Callbacks.Callback;
@@ -338,9 +338,9 @@ package body A0B.I2C.SCD40 is
    procedure Send_Command_And_Fetch_Result
      (Self           : in out SCD40_Driver'Class;
       Command        : SCD40_Command;
-      Input          : Unsigned_8_Array;
+      Input          : A0B.Types.Arrays.Unsigned_8_Array;
       Delay_Interval : A0B.Time.Time_Span;
-      Response       : out Unsigned_8_Array;
+      Response       : out A0B.Types.Arrays.Unsigned_8_Array;
       Status         : aliased out Transaction_Status;
       On_Completed   : A0B.Callbacks.Callback;
       Success        : in out Boolean) is
@@ -389,7 +389,7 @@ package body A0B.I2C.SCD40 is
    procedure Write
      (Self         : in out SCD40_Driver'Class;
       Command      : SCD40_Command;
-      Input        : Unsigned_8_Array;
+      Input        : A0B.Types.Arrays.Unsigned_8_Array;
       Status       : aliased out Transaction_Status;
       On_Completed : A0B.Callbacks.Callback;
       Success      : in out Boolean) is

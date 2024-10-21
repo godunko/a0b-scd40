@@ -4,9 +4,7 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
-with A0B.Types;
-
-with A0B.I2C;
+with A0B.Types.Arrays;
 
 package A0B.SCD40
   with Preelaborate
@@ -31,7 +29,8 @@ is
 
    --
 
-   subtype Read_Measurement_Response is A0B.I2C.Unsigned_8_Array (0 .. 8);
+   subtype Read_Measurement_Response is
+     A0B.Types.Arrays.Unsigned_8_Array (0 .. 8);
 
    procedure Parse_Read_Measurement_Response
      (Buffer  : Read_Measurement_Response;
@@ -42,7 +41,8 @@ is
 
    --  3.6.1 set_temperature_offset
 
-   subtype Set_Temperature_Offset_Input is A0B.I2C.Unsigned_8_Array (0 .. 2);
+   subtype Set_Temperature_Offset_Input is
+     A0B.Types.Arrays.Unsigned_8_Array (0 .. 2);
 
    procedure Build_Set_Temperature_Offset_Input
      (Buffer   : out Set_Temperature_Offset_Input;
@@ -53,7 +53,8 @@ is
 
    --  3.6.3 set_sensor_altitude
 
-   subtype Set_Sensor_Altitude_Input is A0B.I2C.Unsigned_8_Array (0 .. 2);
+   subtype Set_Sensor_Altitude_Input is
+     A0B.Types.Arrays.Unsigned_8_Array (0 .. 2);
 
    procedure Build_Set_Sensor_Altitude_Input
      (Buffer   : out Set_Sensor_Altitude_Input;
@@ -64,7 +65,8 @@ is
 
    --  3.6.5 set_ambient_pressure
 
-   subtype Set_Ambient_Pressure_Input is A0B.I2C.Unsigned_8_Array (0 .. 2);
+   subtype Set_Ambient_Pressure_Input is
+     A0B.Types.Arrays.Unsigned_8_Array (0 .. 2);
 
    procedure Build_Set_Ambient_Pressure_Input
      (Buffer   : out Set_Ambient_Pressure_Input;
@@ -76,7 +78,7 @@ is
    --
 
    subtype Get_Data_Ready_Status_Response
-     is A0B.I2C.Unsigned_8_Array (0 .. 2);
+     is A0B.Types.Arrays.Unsigned_8_Array (0 .. 2);
 
    procedure Parse_Get_Data_Ready_Status_Response
      (Response_Buffer : Get_Data_Ready_Status_Response;
@@ -85,7 +87,8 @@ is
 
    --  3.9.2 get_serial_number
 
-   subtype Get_Serial_Number_Response is A0B.I2C.Unsigned_8_Array (0 .. 8);
+   subtype Get_Serial_Number_Response is
+     A0B.Types.Arrays.Unsigned_8_Array (0 .. 8);
 
    type Serial_Number is mod 2 ** 48;
 

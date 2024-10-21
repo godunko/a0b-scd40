@@ -16,6 +16,7 @@ pragma Restrictions (No_Elaboration_Code);
 with A0B.Callbacks;
 with A0B.Time;
 private with A0B.Timer;
+with A0B.Types.Arrays;
 
 package A0B.I2C.SCD40
   with Preelaborate
@@ -45,7 +46,7 @@ is
    procedure Write
      (Self         : in out SCD40_Driver'Class;
       Command      : SCD40_Command;
-      Input        : Unsigned_8_Array;
+      Input        : A0B.Types.Arrays.Unsigned_8_Array;
       Status       : aliased out Transaction_Status;
       On_Completed : A0B.Callbacks.Callback;
       Success      : in out Boolean);
@@ -53,7 +54,7 @@ is
    procedure Read
      (Self           : in out SCD40_Driver'Class;
       Command        : SCD40_Command;
-      Response       : out Unsigned_8_Array;
+      Response       : out A0B.Types.Arrays.Unsigned_8_Array;
       Delay_Interval : A0B.Time.Time_Span;
       Status         : aliased out Transaction_Status;
       On_Completed   : A0B.Callbacks.Callback;
@@ -62,9 +63,9 @@ is
    procedure Send_Command_And_Fetch_Result
      (Self           : in out SCD40_Driver'Class;
       Command        : SCD40_Command;
-      Input          : Unsigned_8_Array;
+      Input          : A0B.Types.Arrays.Unsigned_8_Array;
       Delay_Interval : A0B.Time.Time_Span;
-      Response       : out Unsigned_8_Array;
+      Response       : out A0B.Types.Arrays.Unsigned_8_Array;
       Status         : aliased out Transaction_Status;
       On_Completed   : A0B.Callbacks.Callback;
       Success        : in out Boolean);
@@ -88,7 +89,7 @@ private
       On_Completed   : A0B.Callbacks.Callback;
       Transaction    : access Transaction_Status;
 
-      Command_Buffer : A0B.I2C.Unsigned_8_Array (0 .. 1);
+      Command_Buffer : A0B.Types.Arrays.Unsigned_8_Array (0 .. 1);
       Write_Buffers  : A0B.I2C.Buffer_Descriptor_Array (0 .. 1);
       Read_Buffers   : A0B.I2C.Buffer_Descriptor_Array (0 .. 0);
       Timeout        : aliased A0B.Timer.Timeout_Control_Block;
