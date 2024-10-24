@@ -95,16 +95,22 @@ package body A0B.I2C.SCD40 is
             raise Program_Error;
 
          when Command =>
-            if Self.Write_Buffers (0).State /= A0B.Success then
-               raise Program_Error;
-            end if;
+            pragma Assert (Self.Write_Buffers (0).Size = 1);
 
-            if not Self.Write_Buffers (0).Acknowledged then
-               raise Program_Error;
-            end if;
+            if Self.Write_Buffers (0).State = A0B.Success
+              and then Self.Write_Buffers (0).Transferred = 1
+              and then Self.Write_Buffers (0).Acknowledged
+            then
+               --  Command transmission has been completed successfully,
+               --  and has been acknowledged by the device.
 
-            Self.Transaction.State := Self.Write_Buffers (0).State;
-            --  Only command has been send, set status of the operation.
+               Self.Transaction.State := A0B.Success;
+               --  Only command have to been send, operation completed.
+
+            else
+               Self.Transaction.State := A0B.Failure;
+               --  Only command have to been send, operation completed.
+            end if;
 
          when Command_Read =>
             pragma Assert (Self.Write_Buffers (0).Size = 2);
