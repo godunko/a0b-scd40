@@ -95,10 +95,10 @@ package body A0B.I2C.SCD40 is
             raise Program_Error;
 
          when Command =>
-            pragma Assert (Self.Write_Buffers (0).Size = 1);
+            pragma Assert (Self.Write_Buffers (0).Size = 2);
 
             if Self.Write_Buffers (0).State = A0B.Success
-              and then Self.Write_Buffers (0).Transferred = 1
+              and then Self.Write_Buffers (0).Transferred = 2
               and then Self.Write_Buffers (0).Acknowledged
             then
                --  Command transmission has been completed successfully,
